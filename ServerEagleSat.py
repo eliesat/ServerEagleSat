@@ -1,45 +1,50 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from Plugins.Plugin import PluginDescriptor
+from Screens.Screen import Screen
+from enigma import getDesktop
+
 from .menus_list.mainhelpers import SystemInfo
-from .menus_list.compat import compat_urlopen, compat_Request, PY3, readFromFile
+from .menus_list.compat import readFromFile
 from .menus_list.Console import Console
 
 import os
+import importlib
 from threading import Timer
+
 from Components.ActionMap import NumberActionMap
 from Components.Sources.StaticText import StaticText
 from Components.Sources.List import List
 from Components.Label import Label
 from Components.Pixmap import Pixmap
 from Components.Console import Console as iConsole
+
 from Tools.LoadPixmap import LoadPixmap
 from Tools.Directories import fileExists, resolveFilename, SCOPE_PLUGINS
-from Screens.Screen import Screen
+
 from Plugins.Extensions.ServerEagleSat.__init__ import Version, Panel
 
+
+# ==========================
+# MAIN SCREEN
+# ==========================
 class ServerEagleSat(Screen):
 
     def __init__(self, session):
         Screen.__init__(self, session)
         self.session = session
 
-        # -------------------------
         # SKIN
-        # -------------------------
         self.skin = readFromFile("/skins_list/mainmenu-fhd.xml")
         self.setTitle(_("ServerEagleSat"))
 
-        # -------------------------
         # CORE
-        # -------------------------
         self.iConsole = iConsole()
         self.indexpos = None
         self.system_info = SystemInfo()
 
-        # -------------------------
-        # ACTION MAPS
-        # -------------------------
+        # ACTIONS
         self["NumberActions"] = NumberActionMap(
             ["NumberActions"],
             {'0': self.keyNumberGlobal}
@@ -59,61 +64,49 @@ class ServerEagleSat(Screen):
             }
         )
 
-        # ===== SIDE BARS =====
+        # UI
         self["left_bar"] = Label("\n".join(list("Version " + Version)))
         self["right_bar"] = Label("\n".join(list("By ElieSat")))
 
-        # ===== COLOR BUTTONS =====
         self["key_red"] = Label("Iptv Adder")
         self["key_green"] = Label("Cccam Adder")
         self["key_yellow"] = Label("News")
         self["key_blue"] = Label("Scripts")
 
-        # -------------------------
         # MENU
-        # -------------------------
         self.list = []
         self["menu"] = List(self.list)
         self.mList()
 
-        # -------------------------
         # LABELS
-        # -------------------------
         labels = ["MemoryLabel", "SwapLabel", "FlashLabel", "gstreamerLabel",
                   "pythonLabel", "CPULabel", "ipLabel", "macLabel",
                   "HardwareLabel", "ImageLabel", "KernelLabel",
                   "EnigmaVersionLabel", "driverLabel", "internetLabel"]
+
         text = [_("Ram:"), _("Swap:"), _("Flash:"), _("Gst:"), _("Py:"), _("Prc:"),
                 _("IP address:"), _("Mac Address:"), _("Hdw:"), _("Img:"), _("Krn:"), _("Upd:"), _("Drv:"), _("Internet:")]
 
         for l, t in zip(labels, text):
             self[l] = StaticText(t)
 
-        # -------------------------
-        # VALUE FIELDS
-        # -------------------------
+        # VALUES
         values = ["memTotal", "swapTotal", "flashTotal", "device", "gstreamer", "python",
-                  "Hardware", "Image", "CPU", "Kernel", "ipInfo", "macInfo", "EnigmaVersion",
-                  "driver", "internet"]
+                  "Hardware", "Image", "CPU", "Kernel", "ipInfo", "macInfo",
+                  "EnigmaVersion", "driver", "internet"]
 
         for v in values:
             self[v] = StaticText()
 
-        # -------------------------
         # FOOTER
-        # -------------------------
         self["Version"] = Label(_("V" + Version))
         self["Panel"] = Label(_(Panel))
 
-        # -------------------------
-        # BOX ICON
-        # -------------------------
+        # ICON
         self["boxicon"] = Pixmap()
         self.onLayoutFinish.append(self.loadBoxIcon)
 
-        # -------------------------
-        # LOAD SYSTEM INFO
-        # -------------------------
+        # SYSTEM INFO
         self.system_info.memInfo(self)
         self.system_info.FlashMem(self)
         self.system_info.devices(self)
@@ -124,105 +117,108 @@ class ServerEagleSat(Screen):
         self.system_info.network_info(self)
         self.system_info.intInfo(self)
 
-        # -------------------------
-        # AUTO UPDATE CHECK
-        # -------------------------
         Timer(0.5, lambda: self.system_info.update_me(self)).start()
 
-    # -------------------------
-    # MENU LIST
-    # -------------------------
+    # MENU
     def mList(self):
         self.list = []
         items = [
             ("Add reader", 1, _("كتابة اشتراك شيرينج و اضافة ريدر")),
-            ("Live oscam status", 2, _("إدارة   الاوسكام ايميو و عرض الريدارات")),
-            ("Live ncam status", 3, _("اداة الانكام ايميو و عرض الريدرات")),
-            ("Live softcam file", 4, _("ادارة ملف السوفتكام و عرض المفاتيح و الشغرات")),
-            ("Download install emus", 5, _("تنزيل و تثبيت الايميوهات")),
-            ("Download install softcam", 6, _("تنزيل و تثبيت ملف السوفتكام")),
-            ("Remove emus", 7, _("حذف الايميوهات يالكامل")),
-            ("Show emus files", 8, _("تصفح ملفات الايميوهات")),
-            ("Show log file", 9, _("عرض ملف اللوج")),
-            ("Show expiracy date", 10, _("عرض عدد الايام المتبقية للاشتراك")),
+            ("Live oscam status", 2, _("إدارة الاوسكام")),
+            ("Live ncam status", 3, _("اداة الانكام")),
+            ("Live softcam file", 4, _("ادارة السوفتكام")),
+            ("Download install emus", 5, _("تنزيل الايميو")),
+            ("Download install softcam", 6, _("تنزيل السوفتكام")),
+            ("Remove emus", 7, _("حذف الايميو")),
+            ("Show emus files", 8, _("تصفح الملفات")),
+            ("Show log file", 9, _("عرض اللوج")),
+            ("Show expiracy date", 10, _("عرض الايام المتبقية")),
             ("About", 11, _("About"))
         ]
 
-        for item_name, item_id, item_desc in items:
-            img_path = "Extensions/ServerEagleSat/icons_list/menu/{}.png".format(item_name)
+        for name, idx, desc in items:
+            img_path = "Extensions/ServerEagleSat/icons_list/menu/%s.png" % name
             img = LoadPixmap(cached=True, path=resolveFilename(SCOPE_PLUGINS, img_path))
-            self.list.append((_(item_name), item_id, item_desc, img))
+            self.list.append((_(name), idx, desc, img))
 
-        if getattr(self, "indexpos", None) is not None:
-            self["menu"].setIndex(self.indexpos)
         self["menu"].setList(self.list)
 
-    # -------------------------
-    # BOX ICON LOADING
-    # -------------------------
+    # ICON
     def loadBoxIcon(self):
         try:
-            hostname_file = "/etc/hostname"
-            box_name = "default"
-            if os.path.exists(hostname_file):
-                with open(hostname_file, "r") as f:
-                    content = f.read().strip()
-                    if content:
-                        box_name = content.lower()
+            box = "default"
+            if os.path.exists("/etc/hostname"):
+                box = open("/etc/hostname").read().strip().lower()
 
-            icon_folder = resolveFilename(SCOPE_PLUGINS, "Extensions/ServerEagleSat/icons_list/boxicons/")
-            icon_file = os.path.join(icon_folder, f"{box_name}.png")
-            default_icon = os.path.join(icon_folder, "default.png")
+            folder = resolveFilename(SCOPE_PLUGINS, "Extensions/ServerEagleSat/icons_list/boxicons/")
+            icon = os.path.join(folder, "%s.png" % box)
 
-            if not fileExists(icon_file):
-                print(f"Box icon not found for '{box_name}', using default")
-                icon_file = default_icon
+            if not fileExists(icon):
+                icon = os.path.join(folder, "default.png")
 
-            pixmap = LoadPixmap(cached=True, path=icon_file)
-            if pixmap:
-                self["boxicon"].instance.setPixmap(pixmap)
+            pix = LoadPixmap(cached=True, path=icon)
+            if pix:
+                self["boxicon"].instance.setPixmap(pix)
                 self["boxicon"].show()
-                print(f"Box icon loaded: {icon_file}")
-            else:
-                print(f"Failed to load pixmap: {icon_file}")
 
         except Exception as e:
-            print("Error loading box icon:", e)
+            print("ICON ERROR:", e)
 
-    # -------------------------
     # KEYS
-    # -------------------------
     def keyOK(self, item=None):
-        self.indexpos = self["menu"].getIndex()
         if item is None:
             item = self["menu"].getCurrent()[1]
         self.select_item(item)
 
     def select_item(self, item):
-        pass
+        try:
+            if item == 11:
+                return
+
+            module = importlib.import_module(
+                "Plugins.Extensions.ServerEagleSat.submenus_list.Eagle%d" % item
+            )
+
+            cls = getattr(module, "Eagle%d" % item)
+            self.session.open(cls)
+
+        except Exception as e:
+            print("PLUGIN LOAD ERROR:", e)
 
     def keyNumberGlobal(self, number):
         if number == 0:
-            self.session.open(Console, _("Updating ElieSatPanelList, please wait..."), [
+            self.session.open(Console, _("Updating..."), [
                 "wget --no-check-certificate https://raw.githubusercontent.com/eliesat/eliesatpanel/main/installer.sh -qO - | /bin/sh"
             ])
 
     def exit(self):
         self.close()
 
-    def iptv(self):
-        pass
-
-    def cccam(self):
-        pass
-
-    def grid(self):
-        pass
-
-    def scriptslist(self):
-        pass
+    def iptv(self): pass
+    def cccam(self): pass
+    def grid(self): pass
+    def scriptslist(self): pass
 
     def infoKey(self):
         self.session.open(Console, _("Please wait..."), [
             "wget --no-check-certificate https://gitlab.com/eliesat/scripts/-/raw/main/check/_check-all.sh -qO - | /bin/sh"
         ])
+
+
+# ==========================
+# PLUGIN ENTRY
+# ==========================
+def main(session, **kwargs):
+    session.open(ServerEagleSat)
+
+
+def Plugins(**kwargs):
+    return [
+        PluginDescriptor(
+            name="ServerEagleSat",
+            description="ServerEagleSat Panel",
+            where=PluginDescriptor.WHERE_PLUGINMENU,
+            icon="plugin.png",
+            fnc=main
+        )
+    ]
