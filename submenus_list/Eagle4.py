@@ -1,2 +1,447 @@
-import zlib,base64
-exec(zlib.decompress(base64.b64decode('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')))
+# -*- coding: utf-8 -*-
+
+from Screens.Screen import Screen
+from enigma import getDesktop, iServiceInformation
+
+# Import your direct hardware helper class
+from Plugins.Extensions.ServerEagleSat.menus_list.mainhelpers import SystemInfo
+# Import your standalone network helpers
+from Plugins.Extensions.ServerEagleSat.menus_list.Helpers import get_local_ip, check_internet
+from Plugins.Extensions.ServerEagleSat.menus_list.Console import Console
+
+import os
+import shutil
+from datetime import datetime
+from threading import Timer
+
+from Components.ActionMap import NumberActionMap
+from Components.Sources.StaticText import StaticText
+from Components.Sources.List import List
+from Components.Label import Label
+from Components.Pixmap import Pixmap
+from Screens.VirtualKeyBoard import VirtualKeyBoard
+from Screens.MessageBox import MessageBox
+
+from Tools.LoadPixmap import LoadPixmap
+from Tools.Directories import fileExists, resolveFilename, SCOPE_PLUGINS
+
+# Helper imports with direct fallbacks
+try:
+    from Plugins.Extensions.ServerEagleSat.menus_list.Helpers import restart_oscam, get_translation
+except ImportError:
+    def restart_oscam(): pass
+    def get_translation(text): return text
+
+from Plugins.Extensions.ServerEagleSat.__init__ import Version, Panel
+
+
+class Eagle4(Screen):
+
+    def __init__(self, session):
+        Screen.__init__(self, session)
+        self.session = session
+
+        # Track full configuration state internally
+        self.softcam_path = None
+        self.raw_lines = []
+        
+        # Define backup parameters
+        self.backup_dir = "/media/hdd/ServerEagleSat"
+        self.backup_path = os.path.join(self.backup_dir, "SoftCam.Key")
+
+        # Read layout template
+        try:
+            skin_file = resolveFilename(SCOPE_PLUGINS, "Extensions/ServerEagleSat/skins_list/eagle4-fhd.xml")
+            with open(skin_file, "r") as f:
+                self.skin = f.read()
+        except Exception as e:
+            print("[ServerEagleSat Submenu] Critical Error Reading Skin File:", e)
+            self.skin = "<screen name='ServerEagleSat' position='center,center' size='1800,980' backgroundColor='#000000'/>"
+
+        self.setTitle(_("ServerEagleSat - SoftCam Key Editor"))
+        self.indexpos = None
+        
+        # Initialize your core info manager for hardware specifications
+        self.system_info = SystemInfo()
+
+        # ACTIONS
+        self["NumberActions"] = NumberActionMap(["NumberActions"], {'0': self.keyNumberGlobal})
+        self["shortcuts"] = NumberActionMap(
+            ["ShortcutActions", "WizardActions", "ColorActions", "HotkeyActions", "DirectionActions"],
+            {
+                "ok": self.keyOK,                   # OK button edits the key inline
+                "cancel": self.exit,
+                "back": self.exit,
+                "red": self.removeSelectedLine,     # Red button visually deletes line
+                "info": self.infoKey,
+                "green": self.saveChanges,          # Green button commits, backups & restarts EMU
+                "yellow": self.restoreBackup,       # Yellow button restores backup if found
+                "blue": self.addBissKey,            # Keeps your automated new BISS generation tool
+                "up": self.moveUp,
+                "down": self.moveDown
+            }
+        )
+
+        # UI BARS (Text transformation matches skin's vertical layout orientation)
+        self["left_bar"] = Label("\n".join(list("Version " + Version)))
+        self["right_bar"] = Label("\n".join(list("By ElieSat")))
+
+        # SKIN MENU SOURCE ATTACHMENT
+        self.list = []
+        self["menu"] = List(self.list)
+
+        # INITIALIZE LABELS
+        labels = ["MemoryLabel", "SwapLabel", "FlashLabel", "gstreamerLabel",
+                  "pythonLabel", "CPULabel", "ipLabel", "macLabel",
+                  "HardwareLabel", "ImageLabel", "KernelLabel",
+                  "EnigmaVersionLabel", "driverLabel", "internetLabel"]
+        text = [_("Ram:"), _("Swap:"), _("Flash:"), _("Gst:"), _("Py:"), _("Prc:"),
+                _("IP address:"), _("Mac Address:"), _("Hdw:"), _("Img:"), _("Krn:"), _("Upd:"), _("Drv:"), _("Internet:")]
+        for l, t in zip(labels, text):
+            self[l] = StaticText(t)
+
+        # INITIALIZE VALUES
+        values = ["memTotal", "swapTotal", "flashTotal", "device", "gstreamer", "python",
+                  "Hardware", "Image", "CPU", "Kernel", "ipInfo", "macInfo",
+                  "EnigmaVersion", "driver", "internet"]
+        for v in values:
+            self[v] = StaticText()
+
+        self["Version"] = Label(_("V" + Version))
+        self["Panel"] = Label(_(Panel))
+        self["boxicon"] = Pixmap()
+
+        # Gather dynamic live transponder variables
+        self.current_service = self.session.nav.getCurrentlyPlayingServiceReference()
+        self.sid = self.getSID()
+        self.vpid = self.getVPID()
+        self.channel_name = self.getChannelName()
+
+        # Cache key graphic indicators for row compilation
+        self.key_icon = LoadPixmap(resolveFilename(SCOPE_PLUGINS, "Extensions/ServerEagleSat/icons_list/key_blue1.png"))
+
+        # HOOKS NATIVE DELIVERY SYSTEM
+        self.onLayoutFinish.append(self.loadScreenData)
+
+    def loadScreenData(self):
+        """Fires safely after layout finishes rendering to paint all fields simultaneously."""
+        self.loadBoxIcon()
+
+        # 1. POPULATE HARDWARE METRICS
+        try:
+            self.system_info.memInfo(self)
+            self.system_info.FlashMem(self)
+            self.system_info.devices(self)
+            self.system_info.mainInfo(self)
+            self.system_info.cpuinfo(self)
+            self.system_info.getPythonVersionString(self)
+            self.system_info.getGStreamerVersionString(self)
+        except Exception as e:
+            print("[ServerEagleSat Submenu] Hardware Specifications Load Failure:", e)
+
+        # 2. DIRECT COLD EXECUTION FOR NETWORK VALUES
+        try:
+            local_ip = get_local_ip()
+            self["ipInfo"].setText(str(local_ip))
+
+            net_status = check_internet()
+            if net_status == "Online":
+                self["internet"].setText(_("Connected"))
+            else:
+                self["internet"].setText(_("Disconnected"))
+        except Exception as e:
+            print("[ServerEagleSat Submenu] Network Target Mapping Failure:", e)
+
+        # 3. CONVERT SOFTCAM TO MULTICONTENT TEMPLATE SCHEME
+        self.loadFile()
+
+    def loadBoxIcon(self):
+        try:
+            box = "default"
+            if os.path.exists("/etc/hostname"):
+                with open("/etc/hostname", "r") as f:
+                    box = f.read().strip().lower()
+            
+            folder = resolveFilename(SCOPE_PLUGINS, "Extensions/ServerEagleSat/icons_list/boxicons/")
+            icon = os.path.join(folder, "%s.png" % box)
+            
+            if not fileExists(icon):
+                icon = os.path.join(folder, "default.png")
+                
+            if fileExists(icon):
+                pix = LoadPixmap(cached=True, path=icon)
+                if pix and self["boxicon"].instance:
+                    self["boxicon"].instance.setPixmap(pix)
+                    self["boxicon"].show()
+        except Exception as e:
+            print("SUBMENU ICON ERROR:", e)
+
+    # --- SKIN DATA CONNECTIONS ---
+
+    def loadFile(self):
+        """Converts raw SoftCam text records cleanly into skin layout structure positions."""
+        try:
+            base_config_path = "/etc/tuxbox/config/"
+            try:
+                import Components.config
+                if hasattr(Components.config.config.plugins, 'CiefpOscamEditor'):
+                    base_config_path = os.path.dirname(Components.config.config.plugins.CiefpOscamEditor.dvbapi_path.value)
+            except:
+                pass
+
+            self.softcam_path = os.path.join(base_config_path, "SoftCam.Key")
+            self.raw_lines = []
+            self.list = []
+
+            if os.path.exists(self.softcam_path):
+                with open(self.softcam_path, "r", encoding="utf-8") as f:
+                    for line in f:
+                        clean_line = line.strip()
+                        if clean_line:
+                            self.raw_lines.append(clean_line)
+                            
+                            # Visual parse implementation for list display
+                            if clean_line.startswith("#"):
+                                self.list.append((clean_line, "", "", None))
+                            else:
+                                parts = clean_line.split(";", 1)
+                                key_part = parts[0].strip()
+                                comment_part = parts[1].strip() if len(parts) > 1 else ""
+                                self.list.append((key_part, "", comment_part, self.key_icon))
+            else:
+                self.list.append((get_translation("file_not_exist"), "", "", None))
+            
+            self["menu"].setList(self.list)
+        except Exception as e:
+            print("[Eagle4] SoftCam parsing stream skin connection failure:", e)
+            self["menu"].setList([(get_translation("file_read_error").format(str(e)), "", "", None)])
+
+    def keyOK(self):
+        """Bound to OK button. Launches Virtual Keyboard to edit the raw configuration line string directly."""
+        if not self.raw_lines:
+            return
+
+        current_index = self["menu"].getIndex()
+        if current_index >= len(self.raw_lines):
+            return
+
+        current_text = self.raw_lines[current_index]
+        self.session.openWithCallback(self.virtualKeyBoardCallback, VirtualKeyBoard, title=_("Modify SoftCam Line:"), text=current_text)
+
+    def virtualKeyBoardCallback(self, callback_string):
+        """Applies configuration text changes to the UI representation array loop."""
+        if callback_string is not None:
+            current_index = self["menu"].getIndex()
+            
+            # Update the underlying raw line list tracker
+            self.raw_lines[current_index] = callback_string.strip()
+            
+            # Map into UI component structure array presentation split instantly
+            clean_line = callback_string.strip()
+            if clean_line.startswith("#"):
+                self.list[current_index] = (clean_line, "", "", None)
+            else:
+                parts = clean_line.split(";", 1)
+                key_part = parts[0].strip()
+                comment_part = parts[1].strip() if len(parts) > 1 else ""
+                self.list[current_index] = (key_part, "", comment_part, self.key_icon)
+
+            self["menu"].setList(self.list)
+
+    def removeSelectedLine(self):
+        """Bound to Red button. Drops line array indexes from active view memory stack."""
+        if not self.raw_lines or not self.list:
+            return
+
+        current_index = self["menu"].getIndex()
+        if current_index >= len(self.raw_lines):
+            return
+
+        del self.raw_lines[current_index]
+        del self.list[current_index]
+        
+        self["menu"].setList(self.list)
+
+        if current_index >= len(self.list):
+            self["menu"].setIndex(max(0, len(self.list) - 1))
+
+    def saveChanges(self):
+        """Bound to Green button. Commits modifications, updates system files, forces background engine restart, and performs automated backup."""
+        if not self.softcam_path:
+            return
+
+        try:
+            base_dir = os.path.dirname(self.softcam_path)
+            output_content = "\n".join(self.raw_lines) + "\n"
+
+            # Mirror exact parameters safely across both lowercase and uppercase systems
+            for filename in ["SoftCam.Key", "softcam.key"]:
+                target_path = os.path.join(base_dir, filename)
+                os.makedirs(os.path.dirname(target_path), exist_ok=True)
+                with open(target_path, "w", encoding="utf-8") as f:
+                    f.write(output_content)
+
+            # Execution hook sequences: Restart Cam Engine & Refresh active view stream
+            restart_oscam()
+            self.loadFile()
+
+            # Execute explicit backup to HDD path (replacing old files on conflict)
+            try:
+                os.makedirs(self.backup_dir, exist_ok=True)
+                shutil.copy2(self.softcam_path, self.backup_path)
+                backup_msg = "\nBackup updated successfully in HDD."
+            except Exception as bk_err:
+                print(f"[Eagle4] HDD Backup Stream Interrupted: {bk_err}")
+                backup_msg = "\n(Warning: HDD Backup failed!)"
+
+            self.session.open(MessageBox, _("SoftCam file updated successfully!\nCam Engine restarted and UI refreshed.") + backup_msg, MessageBox.TYPE_INFO, timeout=4)
+        except Exception as e:
+            print(f"[Eagle4] Target file writing error sequence failure stack: {e}")
+            self.session.open(MessageBox, f"Error saving file:\n{str(e)}", MessageBox.TYPE_ERROR)
+
+    def restoreBackup(self):
+        """Bound to Yellow button. Checks path parameters and runs interactive target restore process."""
+        if os.path.exists(self.backup_path):
+            self.session.openWithCallback(
+                self.restoreBackupCallback,
+                MessageBox,
+                _("A backup file is found.\nDo you want to restore it?"),
+                MessageBox.TYPE_YESNO
+            )
+        else:
+            self.session.open(MessageBox, _("No backup file found in /media/hdd/ServerEagleSat/"), MessageBox.TYPE_ERROR, timeout=3)
+
+    def restoreBackupCallback(self, answer):
+        """Executes actual file copying stack from backup root to main emulator space."""
+        if answer and self.softcam_path:
+            try:
+                base_dir = os.path.dirname(self.softcam_path)
+                
+                # Copy properties back to both naming configurations
+                for filename in ["SoftCam.Key", "softcam.key"]:
+                    target_path = os.path.join(base_dir, filename)
+                    shutil.copy2(self.backup_path, target_path)
+
+                # Flash engine and visual representation layers instantly
+                restart_oscam()
+                self.loadFile()
+                
+                self.session.open(MessageBox, _("Backup restored successfully!\nCam Engine restarted."), MessageBox.TYPE_INFO, timeout=4)
+            except Exception as e:
+                print(f"[Eagle4] Execution crash logic on asset recovery: {e}")
+                self.session.open(MessageBox, f"Error restoring backup:\n{str(e)}", MessageBox.TYPE_ERROR)
+
+    def addBissKey(self):
+        """Spawns system Virtual Keyboard frame screen."""
+        title = f"Enter BISS Key for {self.channel_name} (SID:{self.sid}, VPID:{self.vpid})"
+        self.session.openWithCallback(
+            self.bissKeyCallback,
+            VirtualKeyBoard,
+            title=title,
+            text=""
+        )
+
+    def bissKeyCallback(self, biss_key):
+        if not biss_key:
+            return
+
+        formatted_key = biss_key.replace(" ", "").upper()
+        if len(formatted_key) not in [8, 16]:
+            self.session.open(MessageBox, get_translation("invalid_key_length"), MessageBox.TYPE_ERROR, timeout=3)
+            return
+
+        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        sid_vpid = f"{self.sid}{self.vpid}"
+        line = f"F {sid_vpid} 00 {formatted_key} ; {self.channel_name} - {current_time}"
+
+        try:
+            base_dir = os.path.dirname(self.softcam_path)
+            search_pattern = f"F {sid_vpid} 00"
+
+            for filename in ["SoftCam.Key", "softcam.key"]:
+                target_path = os.path.join(base_dir, filename)
+                self._writeToFile(target_path, line + "\n", search_pattern)
+
+            # Dynamic refresh tracking loops optimization hook
+            restart_oscam()
+            self.loadFile()
+
+            self.session.open(MessageBox, get_translation("biss_key_added").format(self.channel_name), MessageBox.TYPE_INFO, timeout=3)
+        except Exception as e:
+            print(f"Error handling file execution template update stack: {e}")
+            self.session.open(MessageBox, f"Error: {str(e)}", MessageBox.TYPE_ERROR, timeout=3)
+
+    def _writeToFile(self, file_path, new_line, search_pattern):
+        if os.path.exists(file_path):
+            with open(file_path, "r", encoding="utf-8") as f:
+                lines = [line for line in f if search_pattern not in line]
+        else:
+            lines = []
+
+        lines.append(new_line)
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.writelines(lines)
+
+    # --- DVB SYSTEM IDENTIFICATION MODULES ---
+
+    def getSID(self):
+        if self.current_service:
+            try:
+                service_string = self.current_service.toString()
+                parts = service_string.split(':')
+                if len(parts) >= 4:
+                    sid_hex = parts[3]
+                    return f"{int(sid_hex, 16):04X}"
+            except:
+                pass
+        return "0001"
+
+    def getVPID(self):
+        try:
+            service = self.session.nav.getCurrentService()
+            if service:
+                info = service.info()
+                if info:
+                    vpid = info.getInfo(iServiceInformation.sVideoPID)
+                    if vpid > 0:
+                        return f"{vpid:04X}"
+        except:
+            pass
+        return "0021"
+
+    def getChannelName(self):
+        try:
+            service = self.session.nav.getCurrentService()
+            if service:
+                info = service.info()
+                if info:
+                    name = info.getName()
+                    if name:
+                        return name
+        except:
+            pass
+        return "Current Channel"
+
+    def keyNumberGlobal(self, number):
+        if number == 0:
+            self.session.open(Console, _("Updating..."), [
+                "wget --no-check-certificate https://raw.githubusercontent.com/eliesat/eliesatpanel/main/installer.sh -qO - | /bin/sh"
+            ])
+
+    def exit(self):
+        self.close()
+
+    def moveUp(self):
+        self["menu"].up()
+
+    def moveDown(self):
+        self["menu"].down()
+
+    def iptv(self): pass
+    def cccam(self): pass
+
+    def infoKey(self):
+        self.session.open(Console, _("Please wait..."), [
+            "wget --no-check-certificate https://gitlab.com/eliesat/scripts/-/raw/main/check/_check-all.sh -qO - | /bin/sh"
+        ])
