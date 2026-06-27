@@ -10,23 +10,21 @@ from Plugins.Extensions.ServerEagleSat.menus_list.Helpers import get_local_ip, c
 from Plugins.Extensions.ServerEagleSat.menus_list.Console import Console
 
 import os
+from threading import Timer
 
-# Components
 from Components.ActionMap import NumberActionMap
 from Components.Sources.StaticText import StaticText
 from Components.Sources.List import List
 from Components.Label import Label
 from Components.Pixmap import Pixmap
-from Components.ScrollLabel import ScrollLabel 
 
 from Tools.LoadPixmap import LoadPixmap
 from Tools.Directories import fileExists, resolveFilename, SCOPE_PLUGINS
 
 from Plugins.Extensions.ServerEagleSat.__init__ import Version, Panel
-from enigma import eTimer 
 
 
-class Eagle9(Screen):
+class Eagle11(Screen):
 
     def __init__(self, session):
         Screen.__init__(self, session)
@@ -34,34 +32,32 @@ class Eagle9(Screen):
 
         # Read layout template
         try:
-            skin_file = resolveFilename(SCOPE_PLUGINS, "Extensions/ServerEagleSat/skins_list/eagle9-fhd.xml")
+            skin_file = resolveFilename(SCOPE_PLUGINS, "Extensions/ServerEagleSat/skins_list/eagle11-fhd.xml")
             with open(skin_file, "r") as f:
                 self.skin = f.read()
         except Exception as e:
             print("[ServerEagleSat Submenu] Critical Error Reading Skin File:", e)
             self.skin = "<screen name='ServerEagleSat' position='center,center' size='1800,980' backgroundColor='#000000'/>"
 
-        self.setTitle(_("ServerEagleSat - Cam Live Logs"))
+        self.setTitle(_("ServerEagleSat - Add Reader"))
         self.indexpos = None
         
+        # Initialize your core info manager for hardware specifications
         self.system_info = SystemInfo()
-        self.last_log_content = ""
 
-        # CLEANED ACTIONS: Removed color mappings entirely so they act purely as visual decoration
+        # ACTIONS
         self["NumberActions"] = NumberActionMap(["NumberActions"], {'0': self.keyNumberGlobal})
         self["shortcuts"] = NumberActionMap(
-            ["ShortcutActions", "WizardActions", "HotkeyActions", "DirectionActions"],
+            ["ShortcutActions", "WizardActions", "ColorActions", "HotkeyActions"],
             {
                 "ok": self.keyOK,
                 "cancel": self.exit,
                 "back": self.exit,
+                "red": self.iptv,
                 "info": self.infoKey,
-                
-                # Manual Scrolling Key-Binds for Logs
-                "up": self.logUp,
-                "down": self.logDown,
-                "left": self.logUp,
-                "right": self.logDown,
+                "green": self.cccam,
+                "yellow": self.grid,
+                "blue": self.scriptslist,
             }
         )
 
@@ -69,13 +65,13 @@ class Eagle9(Screen):
         self["left_bar"] = Label("\n".join(list("Version " + Version)))
         self["right_bar"] = Label("\n".join(list("By ElieSat")))
 
-        # DECORATIVE ONLY: Static placeholders on the screen
-        self["key_red"] = Label("- - - -")
-        self["key_green"] = Label("- - - -")
-        self["key_yellow"] = Label("- - - -")
-        self["key_blue"] = Label("- - - -")
+        # COLOR KEYS LABELS
+        self["key_red"] = Label("Iptv Adder")
+        self["key_green"] = Label("Cccam Adder")
+        self["key_yellow"] = Label("News")
+        self["key_blue"] = Label("Scripts")
 
-        # MENU PLACEHOLDER
+        # MENU
         self.list = []
         self["menu"] = List(self.list)
 
@@ -100,18 +96,15 @@ class Eagle9(Screen):
         self["Panel"] = Label(_(Panel))
         self["boxicon"] = Pixmap()
 
-        # The Log component
-        self["cam_logs"] = ScrollLabel(_("Loading live log streams..."))
-
-        self.log_timer = eTimer()
-        self.log_timer.callback.append(self.updateCamLogs)
-
+        # HOOKS NATIVE DELIVERY SYSTEM
         self.onLayoutFinish.append(self.loadScreenData)
-        self.onClose.append(self.cleanupScreen)
 
     def loadScreenData(self):
+        """Fires safely after layout finishes rendering to paint all fields simultaneously."""
+        # 1. Render STB Graphic Icon
         self.loadBoxIcon()
 
+        # 2. POPULATE HARDWARE METRICS (Restores RAM, Swap, Flash, Gst, Python, Image, etc.)
         try:
             self.system_info.memInfo(self)
             self.system_info.FlashMem(self)
@@ -123,10 +116,13 @@ class Eagle9(Screen):
         except Exception as e:
             print("[ServerEagleSat Submenu] Hardware Specifications Load Failure:", e)
 
+        # 3. DIRECT COLD EXECUTION FOR NETWORK VALUES (Maintains working network headers)
         try:
+            # Render local system IP string
             local_ip = get_local_ip()
             self["ipInfo"].setText(str(local_ip))
 
+            # Render outside internet authentication string
             net_status = check_internet()
             if net_status == "Online":
                 self["internet"].setText(_("Connected"))
@@ -135,61 +131,19 @@ class Eagle9(Screen):
         except Exception as e:
             print("[ServerEagleSat Submenu] Network Target Mapping Failure:", e)
 
-        # Force immediate check before timer starts to show content quickly
-        self.updateCamLogs()
-        self.log_timer.start(2000, False)
-
-    def updateCamLogs(self):
-        possible_paths = [
-            "/tmp/oscam.log",
-            "/tmp/ncam.log",
-            "/var/log/oscam.log",
-            "/var/log/ncam.log",
-            "/tmp/smartcard.log"
-        ]
-        
-        current_log_data = _("No active OSCam or NCam log detected on filesystem.")
-        
-        for log_path in possible_paths:
-            if os.path.exists(log_path):
-                try:
-                    with open(log_path, "r", errors="ignore") as f:
-                        lines = f.readlines()
-                        latest_lines = lines[-100:]
-                        current_log_data = "".join(latest_lines)
-                    break
-                except Exception as e:
-                    current_log_data = "Log Read Error: %s" % str(e)
-
-        if current_log_data != self.last_log_content:
-            self.last_log_content = current_log_data
-            if "cam_logs" in self:
-                self["cam_logs"].setText(current_log_data)
-                # CHANGED: Replaced pageDown() with lastPage() to force window straight to the absolute end
-                self["cam_logs"].lastPage()
-
-    def logUp(self):
-        if "cam_logs" in self:
-            self["cam_logs"].pageUp()
-
-    def logDown(self):
-        if "cam_logs" in self:
-            self["cam_logs"].pageDown()
-
-    def cleanupScreen(self):
-        if self.log_timer:
-            self.log_timer.stop()
-
     def loadBoxIcon(self):
         try:
             box = "default"
             if os.path.exists("/etc/hostname"):
                 with open("/etc/hostname", "r") as f:
                     box = f.read().strip().lower()
+            
             folder = resolveFilename(SCOPE_PLUGINS, "Extensions/ServerEagleSat/icons_list/boxicons/")
             icon = os.path.join(folder, "%s.png" % box)
+            
             if not fileExists(icon):
                 icon = os.path.join(folder, "default.png")
+                
             if fileExists(icon):
                 pix = LoadPixmap(cached=True, path=icon)
                 if pix and self["boxicon"].instance:
@@ -198,13 +152,23 @@ class Eagle9(Screen):
         except Exception as e:
             print("SUBMENU ICON ERROR:", e)
 
-    def keyOK(self): pass
+    def keyOK(self):
+        pass
+
     def keyNumberGlobal(self, number):
         if number == 0:
             self.session.open(Console, _("Updating..."), [
                 "wget --no-check-certificate https://raw.githubusercontent.com/eliesat/eliesatpanel/main/installer.sh -qO - | /bin/sh"
             ])
-    def exit(self): self.close()
+
+    def exit(self):
+        self.close()
+
+    def iptv(self): pass
+    def cccam(self): pass
+    def grid(self): pass
+    def scriptslist(self): pass
+
     def infoKey(self):
         self.session.open(Console, _("Please wait..."), [
             "wget --no-check-certificate https://gitlab.com/eliesat/scripts/-/raw/main/check/_check-all.sh -qO - | /bin/sh"
