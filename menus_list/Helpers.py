@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 """
 Helpers.py
-Common helpers for ElieSatPanel plugin (network, image, python, storage, ram, password check).
+Common helpers for ElieSatPanel plugin (network, image, python, storage, ram, password check, softcam control).
 """
 
 import os
-import re
 import sys
 import socket
 import subprocess
 import uuid
+import glob
 
 # ---------------- NETWORK HELPERS ----------------
 def get_local_ip():
@@ -218,3 +218,79 @@ def is_device_unlocked():
     except Exception:
         return False
 
+
+# ---------------- SOFTCAM CONTROL HELPERS ----------------
+def restart_softcam_services(custom_egami_cmd=None):
+    """
+    Force terminates active softcams and cycles image-specific start sequences.
+    Optimized order to prevent OpenATV from falling into generic script paths.
+    """
+    try:
+        executed = False
+
+        # 1. OpenBlackHole (/usr/camscript) & EGAMI (/usr/emu_scripts)
+        if os.path.exists("/usr/camscript") or os.path.exists("/usr/emu_scripts"):
+            universal_bash = (
+                'killall -9 ncam oscam CCcam 2>/dev/null; '
+                '[ -d /usr/camscript ] && d="/usr/camscript" && p="Ncam_" || '
+                '{ [ -d /usr/emu_scripts ] && d="/usr/emu_scripts" && p="EGcam_"; }; '
+                'if [ -n "$d" ]; then '
+                'for s in $d/${p}*.sh; do [[ "$s" != *"_Ci.sh"* ]] && [ -f "$s" ] && "$s" stop; done; '
+                'sleep 2; l=0; '
+                'for s in $d/${p}*[nN][cC][aA][mI]*.sh; do [ -f "$s" ] && { "$s" start & l=1; break; }; done; '
+                'if [ $l -eq 0 ]; then '
+                'for s in $d/${p}*[oO][sS][cC][aA][mM]*.sh; do [ -f "$s" ] && { "$s" start & break; }; done; '
+                'fi; fi'
+            )
+            subprocess.call(universal_bash, shell=True)
+            executed = True
+
+        # 2. OpenATV standard softcam management (/etc/init.d/softcam)
+        if not executed and os.path.exists("/etc/init.d/softcam"):
+            subprocess.call("killall -9 oscam ncam CCcam 2>/dev/null", shell=True)
+            subprocess.call("sleep 2", shell=True)
+            subprocess.call("/etc/init.d/softcam stop", shell=True)
+            subprocess.call("sleep 2", shell=True)
+            subprocess.call("/etc/init.d/softcam start", shell=True)
+            executed = True
+
+        # 3. Traditional Images with custom softcam extension (/etc/init.d/softcam.emu)
+        if not executed and os.path.exists("/etc/init.d/softcam.emu"):
+            subprocess.call("killall -9 oscam ncam CCcam 2>/dev/null", shell=True)
+            subprocess.call("sleep 2", shell=True)
+            subprocess.call("/etc/init.d/softcam.emu stop", shell=True)
+            subprocess.call("sleep 2", shell=True)
+            subprocess.call("/etc/init.d/softcam.emu start", shell=True)
+            executed = True
+
+        # 4. PurE2 (/usr/script/cam/)
+        if not executed and os.path.exists("/usr/script/cam"):
+            pure_scripts = glob.glob("/usr/script/cam/*.sh")
+            if pure_scripts:
+                subprocess.call("killall -9 oscam ncam CCcam 2>/dev/null", shell=True)
+                subprocess.call("sleep 2", shell=True)
+                subprocess.call(f"{pure_scripts[0]} stop", shell=True)
+                subprocess.call("sleep 2", shell=True)
+                subprocess.call(f"{pure_scripts[0]} start", shell=True)
+                executed = True
+
+        # 5. OpenSPA, OpenPLi, and openHDF (/usr/script/)
+        if not executed and os.path.exists("/usr/script"):
+            script_files = glob.glob("/usr/script/*.sh")
+            if script_files:
+                subprocess.call("killall -9 oscam ncam CCcam 2>/dev/null", shell=True)
+                subprocess.call("sleep 2", shell=True)
+                subprocess.call(f"{script_files[0]} stop", shell=True)
+                subprocess.call("sleep 2", shell=True)
+                subprocess.call(f"{script_files[0]} start", shell=True)
+                executed = True
+
+        # 6. Direct systemd Fallback Routing
+        if not executed:
+            subprocess.call("systemctl stop softcam oscam ncam 2>/dev/null", shell=True)
+            subprocess.call("sleep 2", shell=True)
+            subprocess.call("systemctl start softcam oscam ncam 2>/dev/null", shell=True)
+
+        return True, "Softcam service configuration updated successfully."
+    except Exception as e:
+        return False, f"Softcam control request failed:\n{str(e)}"
