@@ -9,15 +9,6 @@ url=https://github.com/eliesat/ServerEagleSat/archive/main.tar.gz
 package=/tmp/$plugin.tar.gz
 rm -rf /tmp/$plugin.tar.gz >/dev/null 2>&1
 
-# Check script url connectivity and install eliesatpanel
-###########################################
-if wget -q --method=HEAD https://raw.githubusercontent.com/eliesat/eliesatpanel/main/installer.sh; then
-connection=ok
-else
-echo "> Server is down, try again later..."
-exit 1
-fi
-
 # Functions
 ###########################################
 print_message() {
@@ -113,6 +104,7 @@ if [ $extract -eq 0 ]; then
     rm -rf /tmp/ServerEagleSat-main >/dev/null 2>&1
     fi
 print_message "> ServerEagleSat is installed successfully and up to date ..."
+print_message "> Developed by ElieSatPanelGrid Team"
 echo
 sleep 2
 fi
