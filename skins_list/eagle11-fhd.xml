@@ -27,7 +27,7 @@
     <widget source="swapTotal" render="Label" position="1330,241" size="400,40" font="lsat;24" halign="left"  foregroundColor="foreground" transparent="1" />
 
     <widget source="FlashLabel" render="Label" position="1160,281" size="150,40" font="lsat;24" halign="right" foregroundColor="#E6BE3A" transparent="1" />
-    <widget source="flashTotal" render="Label" position="1330,281" size="400,70" font="lsat;24" halign="left"  foregroundColor="foreground" transparent="1" />
+    <widget source="flashTotal" render="Label" position="1330,281" size="400,40" font="lsat;24" halign="left"  foregroundColor="foreground" transparent="1" />
 
     <widget source="ImageLabel" render="Label" position="1160,362" size="150,40" font="lsat;24" halign="right" foregroundColor="#E6BE3A" transparent="1" />
     <widget source="Image"      render="Label" position="1330,362" size="400,40" font="lsat;24" halign="left"  foregroundColor="foreground" transparent="1" />
@@ -66,31 +66,38 @@
         <convert type="ClockToText">Format %H:%M:%S</convert>
     </widget>
 
-    <eLabel position="52,127" size="1161,41" zPosition="3" backgroundColor="#000000" />
-    <eLabel text="Main Menus" position="52,127" size="1161,51" zPosition="4" font="Bold;32" halign="center" valign="center" foregroundColor="#E6BE3A" backgroundColor="#000000" />
+    <eLabel position="56,127" size="525,41" zPosition="3" backgroundColor="#000000" />
+    <eLabel text="Not Available11 ..." position="370,127" size="525,51" zPosition="4" font="Bold;32" halign="center" valign="center" foregroundColor="#E6BE3A" backgroundColor="#000000" />
 
     <widget source="menu" render="Listbox" position="52,200" size="1161,600" backgroundColorSelected="#2A2A2A" listOrientation="vertical" itemHeight="60" scrollbarMode="showOnDemand" transparent="1" noWrap="0">
         <convert type="TemplatedMultiContent">
         {
-        "template": [
-            MultiContentEntryPixmapAlphaTest(pos = (10, 5), size = (44, 44), png = 3),
-            MultiContentEntryText(pos = (70, 17), size = (430, 40), font = 0, flags = RT_HALIGN_LEFT, text = 0),
-            MultiContentEntryText(pos = (520, 10), size = (620, 40), font = 1, flags = RT_HALIGN_RIGHT, text = 2)
-        ],
-        "fonts": [
-            gFont("Console", 30),
-            gFont("Regular", 24)
-        ],
-        "itemHeight": 60
+            "template": [
+                MultiContentEntryPixmapAlphaTest(pos = (10, 5), size = (44, 44), png = 3),
+                MultiContentEntryText(pos = (70, 17), size = (430, 40), font = 0, flags = RT_HALIGN_LEFT, text = 0),
+                MultiContentEntryText(pos = (520, 10), size = (620, 40), font = 1, flags = RT_HALIGN_LEFT, text = 2)
+            ],
+            "fonts": [
+                gFont("Console", 30),
+                gFont("Regular", 24)
+            ],
+            "itemHeight": 60
         }
         </convert>
     </widget>
 
-    <ePixmap position="40,820" size="150,125" zPosition="8" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ServerEagleSat/icons_list/logo.png" transparent="1" alphatest="blend" />
-    <eLabel text="Contact Abou Omar : +201011058982 or ElieSat : +96170787872" position="200,832" size="1000,32" zPosition="5" font="Bold;26" halign="left" valign="center" foregroundColor="#E6BE3A" backgroundColor="#000000" transparent="0" />
-    <eLabel text="Supported Satellites &amp; Packages:" position="200,865" size="1000,32" zPosition="5" font="Bold;26" halign="left" valign="center" foregroundColor="#E6BE3A" backgroundColor="#000000" transparent="0" />
+    <widget name="boxicon" position="1230,808" size="520,140" zPosition="6" alphatest="blend" transparent="1" halign="center" valign="center" />
 
-    <widget source="satellitesListLabel" render="RunningText" options="movetype=running,startpoint=0,startdelay=1000,steptime=40,step=2,direction=left,always=1" position="200,900" size="1015,35" zPosition="5" font="Regular;21" halign="left" valign="center" foregroundColor="#FFFFFF" backgroundColor="#000000" transparent="1" noWrap="1" />
+    <ePixmap position="183,830" size="35,35" zPosition="6" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ServerEagleSat/icons_list/key_red.png" transparent="1" alphatest="blend" />
+    <eLabel text="N/A" position="233,830" size="120,35" zPosition="6" font="Regular;26" halign="left" valign="center" foregroundColor="#ffffff" transparent="1" />
 
-    <widget name="boxicon" position="1230,815" size="510,130" zPosition="6" alphatest="blend" transparent="1" halign="center" valign="center" />
+    <ePixmap position="443,830" size="35,35" zPosition="6" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ServerEagleSat/icons_list/key_green.png" transparent="1" alphatest="blend" />
+    <eLabel text="N/A" position="493,830" size="120,35" zPosition="6" font="Regular;26" halign="left" valign="center" foregroundColor="#ffffff" transparent="1" />
+
+    <ePixmap position="703,830" size="35,35" zPosition="6" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ServerEagleSat/icons_list/key_yellow.png" transparent="1" alphatest="blend" />
+    <eLabel text="N/A" position="753,830" size="120,35" zPosition="6" font="Regular;26" halign="left" valign="center" foregroundColor="#ffffff" transparent="1" />
+
+    <ePixmap position="963,830" size="35,35" zPosition="6" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ServerEagleSat/icons_list/key_blue.png" transparent="1" alphatest="blend" />
+    <eLabel text="N/A" position="1013,830" size="120,35" zPosition="6" font="Regular;26" halign="left" valign="center" foregroundColor="#ffffff" transparent="1" />
+
 </screen>
