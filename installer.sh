@@ -20,15 +20,17 @@ echo
 sleep 2
 
 cleanup() {
-    rm -rf /var/cache/opkg/* /var/lib/opkg/lists/* /run/opkg.lock $i >/dev/null 2>&1
+    rm -rf /var/cache/opkg/* /var/lib/opkg/lists/* /run/opkg.lock >/dev/null 2>&1
 }
 
 #check print image and python version
 ###########################################
-if [ -f /etc/image-version ]; then image_version=$(cat /etc/image-version | grep -iF "creator" | cut -d"=" -f2 | xargs) 
-elif [ -f /etc/issue ]; then image_version=$(cat /etc/issue | head -n1 | awk '{print $1;}') 
+if [ -f /etc/image-version ]; then 
+    image_version=$(cat /etc/image-version | grep -iF "creator" | cut -d"=" -f2 | xargs) 
+elif [ -f /etc/issue ]; then 
+    image_version=$(cat /etc/issue | head -n1 | awk '{print $1;}') 
 else 
-image='> image name not found' 
+    image_version='> image name not found' 
 fi 
 
 python_version=$(python -c "import platform; print(platform.python_version())")
@@ -41,45 +43,54 @@ sleep 2
 # check and install libraries
 ###########################################
 # Check python
-pyVersion=$(python -c"from sys import version_info; print(version_info[0])")
+pyVersion=$(python -c "from sys import version_info; print(version_info[0])")
 
+declare -a deps
 if [ "$pyVersion" = 3 ]; then
-deps+=( "python3-requests" "python3-six" )
+    deps+=( "python3-requests" )
 else
-deps+=( "python-requests" "python-six" )
+    deps+=( "python-requests" "python-json" )
 fi
 
 if [ -f /etc/opkg/opkg.conf ]; then
-  STATUS='/var/lib/opkg/status'
-  OSTYPE='Opensource'
-  OPKG='opkg update'
-  OPKGINSTAL='opkg install'
+    STATUS='/var/lib/opkg/status'
+    OSTYPE='Opensource'
+    OPKG='opkg update'
+    OPKGINSTAL='opkg install'
 elif [ -f /etc/apt/apt.conf ]; then
-  STATUS='/var/lib/dpkg/status'
-  OSTYPE='DreamOS'
-  OPKG='apt-get update'
-  OPKGINSTAL='apt-get install'
+    STATUS='/var/lib/dpkg/status'
+    OSTYPE='DreamOS'
+    OPKG='apt-get update'
+    OPKGINSTAL='apt-get install'
 fi
 
-install() {
-  if ! grep -qs "Package: $1" "$STATUS"; then
-    $OPKG >/dev/null 2>&1
-    rm -rf /run/opkg.lock >/dev/null 2>&1
-    sleep 1
-    if [ "$OSTYPE" = "Opensource" ]; then
-      $OPKGINSTAL "$1"
-      sleep 1
-      clear
-    elif [ "$OSTYPE" = "DreamOS" ]; then
-      $OPKGINSTAL "$1" -y
-      sleep 1
-      clear
+update_runned=0
+run_update_once() {
+    if [ $update_runned -eq 0 ]; then
+        $OPKG >/dev/null 2>&1
+        rm -rf /run/opkg.lock >/dev/null 2>&1
+        update_runned=1
     fi
-  fi
+}
+
+install() {
+    if ! grep -qs "Package: $1" "$STATUS"; then
+        run_update_once
+        sleep 1
+        if [ "$OSTYPE" = "Opensource" ]; then
+            $OPKGINSTAL "$1"
+            sleep 1
+            clear
+        elif [ "$OSTYPE" = "DreamOS" ]; then
+            $OPKGINSTAL "$1" -y
+            sleep 1
+            clear
+        fi
+    fi
 }
 
 for i in "${deps[@]}"; do
-  install "$i"
+    install "$i"
 done
 
 # Remove unnecessary files and folders
@@ -87,7 +98,7 @@ done
 [ -d "/CONTROL" ] && rm -r /CONTROL >/dev/null 2>&1
 rm -rf /control /postinst /preinst /prerm /postrm /tmp/*.ipk /tmp/*.tar.gz >/dev/null 2>&1
 
-# Download and install eliesatpanel
+# Download and install plugin
 ###########################################
 print_message ">Downloading and installing ServerEagleSat please wait ..."
 wget -qO $package --no-check-certificate $url
@@ -100,22 +111,25 @@ if [ $extract -eq 0 ]; then
     mkdir -p /usr/lib/enigma2/python/Plugins/Extensions/ServerEagleSat
     create=$?
     if [ $create -eq 0 ]; then
-    mv /tmp/ServerEagleSat-main/* /usr/lib/enigma2/python/Plugins/Extensions/ServerEagleSat/ >/dev/null 2>&1
-    rm -rf /tmp/ServerEagleSat-main >/dev/null 2>&1
+        mv /tmp/ServerEagleSat-main/* /usr/lib/enigma2/python/Plugins/Extensions/ServerEagleSat/ >/dev/null 2>&1
+        rm -rf /tmp/ServerEagleSat-main >/dev/null 2>&1
     fi
-print_message "> ServerEagleSat is installed successfully and up to date ..."
-print_message "> Developed by ElieSatPanelGrid Team"
-echo
-sleep 2
+    print_message "> ServerEagleSat is installed successfully and up to date ..."
+   sleep 2
+    print_message "> Developed by ElieSatPanelGrid Team"
+    echo
+    sleep 2
 fi
-
+print_message "> Restarting E2,Please wait ..."
 print_message "> End of process ..."
 echo "-----------------------------------------------"
 echo
 sleep 2
+
 # Restart Enigma2 service or kill enigma2 based on the system
 ############################################
-if [ "$OSTYPE" == DreamOS ]; then
+cleanup
+if [ "$OSTYPE" = "DreamOS" ]; then
     sleep 2
     systemctl restart enigma2
 else
